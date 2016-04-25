@@ -2,20 +2,36 @@ package com.example.admin.designtask.view.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.example.admin.designtask.R;
-import com.example.admin.designtask.VersionModel;
+import com.example.admin.designtask.common.MyApplication;
+import com.example.admin.designtask.models.PostModel;
+import com.example.admin.designtask.view.adapter.FeedListAdapter;
+
+import java.util.ArrayList;
 
 public class FeedFragment extends Fragment {
     RecyclerView recyclerView;
+    Context context;
+    ArrayList<PostModel> postModels;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        postModels = new ArrayList<>();
+        context = getActivity();
+
+        postModels = MyApplication.getInstance().getSqlDb().getAllPosts();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -27,58 +43,8 @@ public class FeedFragment extends Fragment {
 
     private void setupRecyclerView(RecyclerView recyclerView) {
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
-        recyclerView.setAdapter(new SimpleStringRecyclerViewAdapter(getActivity(),
-                VersionModel.data));
-    }
-
-    public static class SimpleStringRecyclerViewAdapter extends RecyclerView.Adapter<SimpleStringRecyclerViewAdapter.ViewHolder> {
-        private String[] mValues;
-        private Context mContext;
-
-        public SimpleStringRecyclerViewAdapter(Context context, String[] items) {
-            mContext = context;
-            mValues = items;
-        }
-
-        public String getValueAt(int position) {
-            return mValues[position];
-        }
-
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(android.R.layout.simple_list_item_1, parent, false);
-            return new ViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(final ViewHolder holder, final int position) {
-            holder.mTextView.setText(mValues[position]);
-            holder.mView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Snackbar.make(v, getValueAt(position), Snackbar.LENGTH_SHORT).show();
-                }
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return mValues.length;
-        }
-
-        public static class ViewHolder extends RecyclerView.ViewHolder {
-
-            public final View mView;
-            public final TextView mTextView;
-
-            public ViewHolder(View view) {
-                super(view);
-                mView = view;
-                mTextView = (TextView) view.findViewById(android.R.id.text1);
-            }
-
-        }
+        recyclerView.setAdapter(new FeedListAdapter(postModels, R.layout.feed_list_row));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
     }
 }
 

@@ -1,9 +1,11 @@
 package com.example.admin.designtask.models;
 
+import android.support.v7.widget.RecyclerView;
+
 /**
  * Created by Admin on 4/25/2016.
  */
-public class PostModel {
+public class PostModel{
     private Integer id;
     private Integer authorId;
     private String postText;

@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.admin.designtask">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:fullBackupContent="true"
         android:allowBackup="true"

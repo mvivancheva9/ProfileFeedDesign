@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.PorterDuff;
 
 import com.example.admin.designtask.models.PostModel;
 
@@ -175,7 +176,7 @@ public class SqLiteDbHelper extends SQLiteOpenHelper {
             while (!cursor.isAfterLast()) {
 
 
-                contentValues.put("postCommentsCount", +1);
+                contentValues.put("postCommentsCount", cursor.getInt(cursor.getColumnIndex(POST_COLUMN_COMMENTS_COUNT)) + 1);
                 db.update("posts", contentValues, "id="+postId, null);
 
                 cursor.moveToNext();
@@ -186,7 +187,7 @@ public class SqLiteDbHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void getAllPosts(){
+    public ArrayList<PostModel> getAllPosts(){
         ArrayList<PostModel> array_list = new ArrayList<>();
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -212,6 +213,36 @@ public class SqLiteDbHelper extends SQLiteOpenHelper {
             cursor.moveToNext();
         }
         cursor.close();
+        return array_list;
+    }
+
+    public int likePost(int postId){
+        SQLiteDatabase db = this.getReadableDatabase();
+        ContentValues contentValues = new ContentValues();
+
+        String selectQuery = "select * from posts where id=" + "'" + postId + "'";
+
+        Cursor cursor;
+
+        int likes = 0;
+
+        try {
+            cursor = db.rawQuery(selectQuery, null);
+            cursor.moveToFirst();
+
+            while (!cursor.isAfterLast()) {
+
+                likes = cursor.getInt(cursor.getColumnIndex(POST_COLUMN_LIKES)) + 1;
+                contentValues.put("postLikes", likes);
+                db.update("posts", contentValues, "id="+postId, null);
+
+                cursor.moveToNext();
+            }
+            cursor.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return likes;
     }
 //    public void insertParty(String title, Integer duration, Double latitude, Double longitude) {
 //        SQLiteDatabase db = this.getWritableDatabase();
